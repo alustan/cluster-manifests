@@ -5,6 +5,7 @@
 
 > **Manifests used by app-controller to abstract deployment complexities**
 
+- Metadata needed by manifests are retrieved automatically from applicationset cluster secret 
 
 ## List of controller manifests
 

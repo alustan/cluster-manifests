@@ -17,9 +17,11 @@ spec:
                 addonChartVersion: 0.0.9
                 addonChartRepository: https://aws.github.io/eks-charts
               selector:
-                matchLabels:
-                  environment: staging
-                  prod: false
+                matchExpressions:
+                 
+                  - key: enable_aws_cloudwatch_metrics
+                    operator: In
+                    values: ['true']
          
   template:
     metadata:
@@ -37,7 +39,8 @@ spec:
             releaseName: '{{values.addonChart}}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - $values/values/{{values.addonChart}}/values.yaml
+              - $values/environments/base/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/{{values.addonChart}}/values.yaml
             values: |
               clusterName: {{metadata.annotations.aws_cluster_name}}
               serviceAccount:
