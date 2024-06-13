@@ -1,0 +1,64 @@
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    release: prometheus
+
+datasources: 
+ datasources.yaml:
+   apiVersion: 1
+   datasources:
+   - name: Prometheus
+     type: prometheus
+     url:  http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      
+     access: proxy
+     isDefault: true
+   - name: Loki
+     type: loki
+     url: http://loki.monitoring.svc.cluster.local:3100
+     access: proxy
+
+dashboards: 
+  default:
+    kubernetes:
+      gnetId: 10000
+      revision: 1
+      datasource: Prometheus
+ # Adding an ingress resource for Grafana GUI     
+ingress:
+  enabled: true
+  annotations:
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    alb.ingress.kubernetes.io/listen-ports: "[{\"HTTPS\":443}]"
+    alb.ingress.kubernetes.io/group.name: apps
+    alb.ingress.kubernetes.io/load-balancer-name: gitops-platform
+    
+  ingressClassName: "alb"
+  pathType: Prefix
+  path: /
+  hosts:
+    - "{{metadata.annotations.grafana_host}}"
+  tls:
+  - hosts: 
+      - "{{metadata.annotations.grafana_host}}"
+
+ # Configure Persistent Volume for Grafana storage
+persistence:
+  enabled: true
+  type: statefulset
+  storageClassName: "gp3"
+  accessModes:
+  - ReadWriteOnce
+  size: 3Gi
+  finalizers:
+  - kubernetes.io/pvc-protection
+
+
+
+
+
+
+
+     

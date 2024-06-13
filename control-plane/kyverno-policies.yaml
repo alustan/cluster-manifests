@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kyverno-policies
+  namespace: argocd
+ 
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          environment: staging
+          prod: false
+      
+        
+  template:
+      metadata:
+        name:  kyverno-policies
+        labels:
+          workload: 'true'
+      spec:
+        project: default
+        destination:
+          name: '{{name}}'
+        syncPolicy:
+          automated: {}
+          syncOptions:
+            - CreateNamespace=true
+        source:
+          repoURL: '{{metadata.annotations.addons_git_repo}}'
+          path: 'charts/kyverno-policies'
+          targetRevision: '{{metadata.annotations.addons_git_revision}}'
+         

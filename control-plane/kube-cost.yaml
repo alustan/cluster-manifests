@@ -1,0 +1,52 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons-kube-cost
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - merge:
+        mergeKeys: [server]
+        generators:
+          - clusters:
+              values:
+                addonChart: kubecost/cost-analyzer
+                addonChartRepositoryNamespace: kubecost
+                addonChartVersion: v2.1.0
+                # using oci repostory already configure in argocd
+                # argocd repo add public.ecr.aws --type helm --name aws-public-ecr --enable-oci
+                addonChartRepository: public.ecr.aws
+              selector:
+                matchLabels:
+                  environment: staging
+                  prod: false
+          
+  template:
+    metadata:
+      name: addon-{{name}}-{{values.addonChart}}
+    spec:
+      project: default
+      sources:
+        - repoURL: '{{metadata.annotations.addons_git_repo}}'
+          targetRevision: '{{metadata.annotations.addons_git_revision}}'
+          ref: values
+        - chart: '{{values.addonChartRepositoryNamespace}}/{{values.addonChart}}'
+          repoURL: '{{values.addonChartRepository}}'
+          targetRevision: '{{values.addonChartVersion}}'
+          helm:
+            releaseName: '{{values.addonChart}}'
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/values/{{values.addonChart}}/values.yaml
+
+            
+      destination:
+        namespace: '{{values.addonChartRepositoryNamespace}}'
+        name: '{{name}}'
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true  # Big CRDs.

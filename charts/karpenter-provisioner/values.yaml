@@ -1,0 +1,5 @@
+karpenter:
+  subnetSelector:
+    kubernetes.io/cluster/cluster_name: owned
+  securityGroupSelector:
+    kubernetes.io/cluster/cluster_name: owned

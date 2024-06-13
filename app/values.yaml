@@ -1,0 +1,106 @@
+
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: "staging-web"
+fullnameOverride: "staging-web"
+
+service:
+  type: ClusterIP
+  port: 80
+
+namespace: ""
+
+prometheus:
+  name: apps-prom
+  port: 8081
+
+externalSecret:
+  region: us-west-2
+  key: creds
+
+ingress:
+  enabled: true
+  className: "alb"
+  annotations: 
+    alb.ingress.kubernetes.io/scheme: internet-facing    
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP 
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /   
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/certificate-arn: #arn:aws:acm:us-west-2:339712938823:certificate/c1f6afe2-0e7d-4256-9c4b-4a68eb44424b
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: apps
+    alb.ingress.kubernetes.io/load-balancer-name: gitops-platform
+    link.argocd.argoproj.io/external-link: "https://platform.robusta.dev/"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backendServiceName: app-web #root-service
+          backendServicePort: http #use-annotation
+  tls: 
+   - hosts:
+       - chart-example.local
+
+strategy:
+  canary:
+    enabled: true
+    canaryService: alb-rollout-canary
+    stableService: alb-rollout-stable
+    rootService:  alb-rollout-root
+
+commonAnnotations:
+  link.argocd.argoproj.io/external-link: "https://platform.robusta.dev/"
+
+config:
+  data:
+    # DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    # NODE_ENV: production
+
+externalNameService:  
+  dbAlias: postgres
+  externalName: # staging-eks-postgresql.c9g80s8cqy2b.us-west-2.rds.amazonaws.com
+
+rolloutServices:
+  - name: alb-rollout-root
+    
+  - name: alb-rollout-canary
+    
+  - name: alb-rollout-stable
+
+atlas:
+  enabled: false
+  schema:
+    # sql: |
+    #   create table users (
+    #     id int not null auto_increment,
+    #     name varchar(255) not null,
+    #     email varchar(255) unique
+    #   );
+  data:
+    # 20230316085611.sql: |
+    #   create table users (
+    #     id int not null auto_increment,
+    #     name varchar(255) not null,
+    #     email varchar(255) unique not null,
+    #     short_bio varchar(255) not null,
+    #     primary key (id)
+    #   );
+    # atlas.sum: |
+    #   h1:sPURLhQRvLU79Dnlaw3aiU4KVkyUVEmW+ekenqu/V2o=
+    #   20230316085611.sql h1:FKUFrD9E4ceSeBZ5owv2c05Ag8rokXGKXp53ZctbocE=
+
