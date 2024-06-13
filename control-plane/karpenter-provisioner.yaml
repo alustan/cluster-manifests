@@ -1,0 +1,46 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: karpenter-provisioner
+  namespace: argocd
+ 
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          environment: staging
+          prod: false
+      
+        
+  template:
+      metadata:
+        name:  karpenter-provisioner
+        labels:
+          workload: 'true'
+      spec:
+        project: default
+        destination:
+          name: '{{name}}'
+        syncPolicy:
+          automated: {}
+          syncOptions:
+            - CreateNamespace=true
+        source:
+          repoURL: '{{metadata.annotations.addons_git_repo}}'
+          path: 'charts/karpenter-provisioner'
+          targetRevision: '{{metadata.annotations.addons_git_revision}}'
+          helm:
+            releaseName: 'karpenter-provisioner'
+            values: |
+              karpenter:
+                subnetSelector:
+                  kubernetes.io/cluster/{{metadata.annotations.aws_cluster_name}}: owned
+                securityGroupSelector:
+                  kubernetes.io/cluster/{{metadata.annotations.aws_cluster_name}}: owned
+
+                  
+         

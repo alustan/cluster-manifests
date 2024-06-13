@@ -1,0 +1,53 @@
+{{- if .Values.strategy.canary.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ include "app.fullname" . }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  args:
+    - name: targetGroupName
+  metrics:
+    - name: error-count
+      initialDelay: 1m
+      interval: 5m
+      count: 3
+      failureCondition: result[0] >= 0.05
+      provider:
+        cloudWatch:
+          interval: 30m
+          metricDataQueries:
+            - id: rate
+              expression: "errors / requests"
+            - id: errors
+              metricStat:
+                metric:
+                  namespace: "AWS/ApplicationELB"
+                  metricName: "HTTPCode_Target_5XX_Count"
+                  dimensions:
+                    - name: "TargetGroup"
+                      value: "{{`targetgroup/{{args.targetGroupName}}`}}"
+                period: 300
+                stat: "Sum"
+                unit: "Count"
+            - id: requests
+              metricStat:
+                metric:
+                  namespace: "AWS/ApplicationELB"
+                  metricName: "RequestCountPerTarget"
+                  dimensions:
+                    - name: "TargetGroup"
+                      value: "{{`targetgroup/{{args.targetGroupName}}`}}"
+                period: 300
+                stat: "Sum"
+                unit: "Count"
+{{- end }}
+
+
+
+
+ 
+

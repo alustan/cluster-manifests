@@ -1,0 +1,58 @@
+prometheus:
+  additionalServiceMonitors:
+    - name: "app-service-monitor"
+      additionalLabels:
+        release: prometheus
+        prometheus: main
+      endpoints:
+      - path: /metrics
+        port: http-metrics
+      namespaceSelector:
+        any: true
+      selector:
+        matchExpressions:
+        - key: name
+          operator: Ends with
+          values:
+            - prom
+
+
+# Adding an ingress resource for Prometheus GUI
+  ingress:
+    enabled: true
+    annotations:
+      alb.ingress.kubernetes.io/scheme: "internet-facing"
+      alb.ingress.kubernetes.io/target-type: "ip"
+      alb.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      alb.ingress.kubernetes.io/listen-ports: "[{\"HTTPS\":443}]"
+      alb.ingress.kubernetes.io/group.name: apps
+      alb.ingress.kubernetes.io/load-balancer-name: gitops-platform
+    
+    ingressClassName: "alb"
+    pathType: Prefix
+    paths:
+      - /
+    hosts:
+      - "{{metadata.annotations.prometheus_host}}"
+    tls:
+    - hosts: 
+        - "{{metadata.annotations.prometheus_host}}"
+    
+   
+  prometheusSpec:
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: main
+    serviceMonitorNamespaceSelector:
+      matchLabels:
+        monitoring: prometheus
+    # Configure Persistent Volume for Prometheus storage
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "gp3"
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi

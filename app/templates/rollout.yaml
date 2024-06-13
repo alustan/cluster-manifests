@@ -1,0 +1,95 @@
+{{- if .Values.strategy.canary.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 2
+  rollbackWindow:
+    revisions: 3
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: alb-rollout
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: external-secrets-sm
+            - configMapRef:
+                name: {{ include "app.fullname" . }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+  strategy:
+    canary:
+      pingPong:
+        pingService: ping-service
+        pongService: pong-service
+      antiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: {}
+      canaryService: {{ .Values.strategy.canary.canaryService }}
+      stableService: {{ .Values.strategy.canary.stableService }}
+      maxSurge: "25%"
+      maxUnavailable: 0
+      dynamicStableScale: true
+      analysis:
+        templates:
+          - templateName: {{ include "app.fullname" . }}
+        args:
+          - name: targetGroupName
+            valueFrom:
+              fieldRef:
+                fieldPath: status.alb.canaryTargetGroup.fullName
+      trafficRouting:
+        alb:
+          ingress: {{ include "app.fullname" . }}
+          rootService: {{ .Values.strategy.canary.rootService }}
+          servicePort: {{ .Values.service.port }}
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 40
+        - pause:
+            duration: 1h
+        - setWeight: 60
+        - pause:
+            duration: 1h
+        - setWeight: 80
+        - pause:
+            duration: 1h
+{{- end }}

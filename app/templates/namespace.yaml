@@ -1,0 +1,13 @@
+{{- if .Values.namespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    monitoring: prometheus
+    elbv2.k8s.aws/pod-readiness-gate-inject: enabled
+{{- end }}

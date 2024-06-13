@@ -1,0 +1,23 @@
+{{- if .Values.strategy.canary.enabled }}
+
+{{- range .Values.rolloutServices }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  {{- with $.Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ $.Values.service.type }}
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    apps: {{ $.Values.fullnameOverride }}
+{{- end }}
+
+{{- end }}

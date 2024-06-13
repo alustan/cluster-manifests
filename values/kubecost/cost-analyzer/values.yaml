@@ -1,0 +1,19 @@
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    alb.ingress.kubernetes.io/listen-ports: "[{\"HTTPS\":443}]"
+    alb.ingress.kubernetes.io/load-balancer-name: gitops-platform
+    alb.ingress.kubernetes.io/group.name: apps
+    
+  
+  paths:
+    - /
+  hosts:
+    - "{{metadata.annotations.kube_cost_host}}"
+  tls:
+     - hosts: 
+       - "{{metadata.annotations.kube_cost_host}}"

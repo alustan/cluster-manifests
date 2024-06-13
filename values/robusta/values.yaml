@@ -1,0 +1,17 @@
+clusterName: "{{metadata.annotations.aws_cluster_name}}"
+globalConfig:
+  signing_key: "{{metadata.annotations.robusta_signing_key}}"
+  account_id: "{{metadata.annotations.robusta_account_id }}"
+sinksConfig:
+- robusta_sink:
+    name: robusta_ui_sink
+    token: "{{metadata.annotations.robusta_sink_token}}"
+- slack_sink:
+    name: main_slack_sink
+    slack_channel: "{{metadata.annotations.slack_channel}}"
+    api_key: "{{metadata.annotations.slack_api_key}}"
+enablePrometheusStack: true
+enablePlatformPlaybooks: true
+argoRollouts: true
+runner:
+  sendAdditionalTelemetry: true

@@ -1,0 +1,42 @@
+
+{{- if .Values.atlas.enabled }}
+
+apiVersion: db.atlasgo.io/v1alpha1
+kind: AtlasSchema
+metadata:
+  name: {{ include "app.fullname" . }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+            
+  # Load the URL of the target database from a Kubernetes secret.
+  urlFrom:
+    secretKeyRef:
+      key: url
+      name: external-secrets-sm
+
+  dir:
+    configMapRef:
+      name: {{ include "app.fullname" . }}
+  # Define the desired schema of the target database. This can be defined in either
+  # plain SQL  or in Atlas HCL.
+  {{- with .Values.atlas.schema }}
+  schema:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  
+  # Define policies that control how the operator will apply changes to the target database.
+  policy:
+    # Define a policy that will stop the reconciliation loop if the operator detects
+    # a destructive change such as dropping a column or table.
+    lint:
+      destructive:
+        error: true
+    # Define a policy that omits DROP COLUMN changes from any produced plan.
+    diff:
+      skip:
+        drop_column: true
+
+{{- end }}

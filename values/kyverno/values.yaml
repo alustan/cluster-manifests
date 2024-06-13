@@ -1,0 +1,23 @@
+admissionController:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+        release: prometheus
+
+backgroundController:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+        release: prometheus
+
+cleanupController:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: prometheus
+
+reportsController:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: prometheus
