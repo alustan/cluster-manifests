@@ -18,9 +18,11 @@ spec:
                 addonChartVersion: 1.1.0
                 addonChartRepository: https://kubernetes-sigs.github.io/cluster-proportional-autoscaler
               selector:
-                matchLabels:
-                  environment: staging
-                  prod: false
+                matchExpressions:
+                
+                  - key: enable_pod_autoscaler
+                    operator: In
+                    values: ['true']
         
   template:
     metadata:
@@ -38,7 +40,8 @@ spec:
             releaseName: '{{values.addonChart}}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - $values/values/{{values.addonChart}}/values.yaml
+              - $values/environments/base/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/{{values.addonChart}}/values.yaml
 
       destination:
         namespace: '{{values.addonChartNamespace}}'

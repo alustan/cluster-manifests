@@ -11,9 +11,11 @@ spec:
   generators:
   - clusters:
       selector:
-        matchLabels:
-          environment: staging
-          prod: false
+        matchExpressions:
+              
+          - key: enable_kyverno
+            operator: In
+            values: ['true']
       
         
   template:

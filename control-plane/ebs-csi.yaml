@@ -11,9 +11,11 @@ spec:
         values:
           addonChart: aws-ebs-csi
         selector:
-          matchLabels:
-            environment: staging
-            prod: false
+          matchExpressions:
+         
+            - key: enable_aws_ebs_csi
+              operator: In
+              values: ['true']
   template:
     metadata:
       name: addon-{{name}}-{{values.addonChart}}-resources
@@ -26,6 +28,8 @@ spec:
         helm:
           releaseName: '{{values.addonChart}}'
           ignoreMissingValueFiles: true
+          valueFiles:
+            - ../environments/{{metadata.labels.environment}}/{{values.addonChart}}/resources/values.yaml
           
           
       destination:

@@ -20,9 +20,11 @@ spec:
                 # argocd repo add public.ecr.aws --type helm --name aws-public-ecr --enable-oci
                 addonChartRepository: public.ecr.aws
               selector:
-                matchLabels:
-                  environment: staging
-                  prod: false
+                matchExpressions:
+                 
+                  - key: enable_karpenter
+                    operator: In
+                    values: ['true']
         
   template:
     metadata:
@@ -40,7 +42,8 @@ spec:
             releaseName: '{{values.addonChartReleaseName}}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - $values/values/{{values.addonChart}}/values.yaml
+              - $values/environments/base/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/{{values.addonChart}}/values.yaml
 
             values: |
               settings:

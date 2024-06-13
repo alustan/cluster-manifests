@@ -18,9 +18,11 @@ spec:
                 addonChartRepositoryNamespace: monitoring
                 addonChartRepository: "https://grafana.github.io/helm-charts"
               selector:
-                matchLabels:
-                  environment: staging
-                  prod: false
+                matchExpressions:
+                
+                  - key: enable_loki_stack
+                    operator: In
+                    values: ['true']
         
   template:
     metadata:
@@ -38,7 +40,8 @@ spec:
             releaseName: '{{values.addonChart}}'
             ignoreMissingValueFiles: true
             valueFiles:
-              - $values/values/{{values.addonChart}}/values.yaml
+              - $values/environments/base/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/{{values.addonChart}}/values.yaml
 
            
                
