@@ -19,7 +19,7 @@ spec:
               selector:
                 matchExpressions:
                  
-                  - key: enable_aws_cloudwatch_metrics
+                  - key: enable_aws_cloudwatch
                     operator: In
                     values: ['true']
          
