@@ -13,8 +13,6 @@
 
  - Argo rollouts
 
- - Atlas operator
-
  - Cloudwatch metrics
 
  - EBS CSI
@@ -46,8 +44,6 @@
  - Argo Rollout
  
  - Argo AnalysisTemplate
-
- - AtlasSchema
 
  - ConfigMap
 
