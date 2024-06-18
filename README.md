@@ -9,55 +9,165 @@
 
 ## List of controller manifests
 
- - Argocd
+ - **Argocd**
 
- - Argo rollouts
+ > Enabled and configured argocd ingress to share ALB with other applications exposed via ingress
 
- - Cloudwatch metrics
+ > Enabled service monitor for prometheus
 
- - EBS CSI
+ > Increased (Queries Per Second) rate limit in Argo CD 
 
- - External DNS
+ > Enabled horizontal pod autoscaling
 
- - External secret
+ > Enabled loadbalancer access
 
- - Grafana
+ > Enabled git webhook for regulated syncing of resources
 
- - Karpenter
+ > Configured argocd RBAC
 
- - Kube cost
+ > Configured to access ECR OCI registries
 
- - Pod autosacler
+ > Configured health check for `alustan.io/*` custom resources
 
- - Prometheus
+ > Created default argocd AppProject
 
- - Kyverno
+ - **Argo rollouts**
 
- - ALB controller
+ > Configured to query cloudwatch for http request target
 
- - Loki stack
+ > Enabled service monitor for prometheus
 
- - Robusta
+ - **Cloudwatch metrics**
+
+ > Configured serviceAccount; extracting role-arn from eks blueprint addons
+
+ - **EBS CSI**
+
+ > GP3 enabled
+
+ - **External DNS**
+
+ > Configured serviceAccount; extracting role-arn from eks blueprint addons
+
+ > Policy: upsert-only
+
+ > Enabled service monitor for prometheus
+
+ - **External secret**
+
+ > Configured serviceAccount; extracting role-arn from eks blueprint addons
+
+ > Enabled service monitor for prometheus
+
+ - **Grafana**
+
+ > Enabled service monitor for prometheus
+
+ > Datasources: `prometheus` and `loki`
+
+ > kubernetes dashboards: `gnetId: 10000`
+
+ > Exposed via Ingress
+
+ > EBS persistence storage
+
+ - **Karpenter**
+
+ > Configured serviceAccount; extracting role-arn from eks blueprint addons
+
+ > Enabled service monitor for prometheus
+
+ > Karpenter provisioner
+
+ - **Kube cost**
+
+ > Dashboard exposed via Ingress
+
+ - **Metrics-server**
+
+ - **Prometheus**
+
+ > Enabled application service monitor 
+
+ > Dashboard exposed via Ingress
+
+ > Enabled EBS storage
+
+ - **Kyverno**
+
+ > Enabled service monitor for prometheus
+
+ > Kyverno policies
+
+ - **ALB controller**
+
+ > configured serviceAccount; extracting role-arn from eks blueprint addons
+
+ > Enabled service monitor for prometheus
+
+ > Ignored diferences for `aws-load-balancer-tls` `MutatingWebhookConfiguration` and `ValidatingWebhookConfiguration`
+
+ - **Loki stack**
+
+ - **Robusta**
+
+ > Enabled prometheus stack
+
+ > Enabled argoRollouts
+
+ > Slack integration
 
 ## List of manifests used by app-controller
 
- - Argo Rollout
- 
- - Argo AnalysisTemplate
+ - **Argo Rollout**
 
- - ConfigMap
+ > RollbackWindow revisions: 3
 
- - Deployment
+ > Strategy: canary
 
- - ExternalName service
+ > Pingpong and AntiAffinity implementation: Zero-Downtime with ALB IP target group
 
- - Ingress
+ > Analysis: cloudwatch
 
- - Namespace
+ - **Argo AnalysisTemplate**
 
- - ClusterSecretStore
+ > Error count: result[0] >= 0.05
 
- - ExternalSecret
+ > provider: cloudwatch
+
+ > AWS/ApplicationELB Metrics: rate of HTTPCode_Target_5XX_Count/RequestCountPerTarget
+
+ - **ConfigMap**
+
+ - **Deployment**
+
+ > Secrets pulled from ExternalSecret
+
+ - **ExternalName service**
+
+ > Expose DNS access to postgres DB
+
+ - **Horizontal Pod Autoscaler**
+
+ - **Ingress**
+
+ > configured for both default rolling update and canary deployment
+
+ - **Namespace**
+  
+ > elbv2.k8s.aws/pod-readiness-gate-inject: enabled annotations for ip target zero downtime
+
+ - **ClusterSecretStore and ExternalSecret**
+
+ > pulls secret from external secret operator
+
+ - **Service**
+
+ > Deployment Service
+
+ > Rollout Service
+
+ > Prometheus Service with TargetPort: http-metrics
 
 
 **This is one of multiple projects that aims to setup a functional platform for seemless app deployment with less technical overhead**

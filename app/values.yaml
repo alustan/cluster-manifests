@@ -11,6 +11,18 @@ imagePullSecrets: []
 nameOverride: "staging-web"
 fullnameOverride: "staging-web"
 
+
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 70
+workload:
+  type: deployment # options are 'deployment' or 'rollout'
+
+
 service:
   type: ClusterIP
   port: 80
@@ -50,7 +62,7 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-          backendServiceName: app-web #root-service
+          backendServiceName: app-web #alb-rollout-root
           backendServicePort: http #use-annotation
   tls: 
    - hosts:

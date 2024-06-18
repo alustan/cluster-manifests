@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: addons-robusta
+  name: addons-metacontroller
 spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
@@ -12,18 +12,18 @@ spec:
         generators:
           - clusters:
               values:
-                addonChart: "robusta"
+                addonChart: "metacontroller"
               
-                addonChartVersion: 0.11.0
-                addonChartRepositoryNamespace: robusta
-                addonChartRepository: "https://robusta-charts.storage.googleapis.com"
+                addonChartVersion: 4.11.14
+                addonChartRepositoryNamespace: metacontroller
+                addonChartRepository: "oci://ghcr.io/metacontroller/metacontroller-helm"
               selector:
                 matchExpressions:
                 
-                  - key: enable_robusta
+                  - key: enable_metacontroller
                     operator: In
                     values: ['true']
-         
+        
   template:
     metadata:
       name: addon-{{name}}-{{values.addonChart}}
