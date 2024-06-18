@@ -17,7 +17,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    apps: {{ $.Values.fullnameOverride }}
+    app: {{ $.Values.fullnameOverride }}
 {{- end }}
 
 {{- end }}

@@ -10,7 +10,7 @@ controller:
       additionalLabels:
         release: prometheus
   env:
-    - name: ARGOCD_K8S_CLIENT_QPS #required for Crossplane too many CRDs https://github.com/argoproj/argo-cd/pull/448
+    - name: ARGOCD_K8S_CLIENT_QPS 
       value: '300'
 
 repoServer:
@@ -74,8 +74,11 @@ server:
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 
 configs:
+  secret:
+    githubSecret: "{{.metadata.annotations.git_webhook_secret}}"
+
   repositories:
-    # Required when using helm repository with oci formal like karpenter and aws-gateway-api-controller
+    # Required when using helm repository with oci formal like karpenter 
     aws-public-ecr:
       name: aws-public-ecr
       type: helm
@@ -104,130 +107,37 @@ configs:
     accounts.devopsuser: apiKey,login
     accounts.devuser: apiKey,login
 
-    application.resourceTrackingMethod: 'annotation' #use annotation for tracking required for Crossplane
-    resource.exclusions: |
-      - kinds:
-        - ProviderConfigUsage
-        apiGroups:
-        - "*"
+
+    application.resourceTrackingMethod: 'annotation' 
+    
     resource.customizations: |
-      "awsblueprints.io/*":
-        health.lua: |
-          health_status = {
-            status = "Progressing",
-            message = "Provisioning ..."
-          }
+      "alustan.io/*":
+      health.lua: |
+        health_status = {
+          status = "Progressing",
+          message = "Provisioning ..."
+        }
 
-          if obj.status == nil or obj.status.conditions == nil then
-            return health_status
-          end
-
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" then
-              if condition.status == "True" then
-                health_status.status = "Healthy"
-                health_status.message = "Resource is up-to-date."
-                return health_status
-              end
-            end
-
-            if condition.type == "LastAsyncOperation" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-
-            if condition.type == "Synced" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-          end
-
+        if obj.status == nil then
           return health_status
+        end
 
-      "*.aws.upbound.io/*":
-        health.lua: |
-          health_status = {
-            status = "Progressing",
-            message = "Provisioning ..."
-          }
+        if obj.status == "error" or obj.status == "failed" then
+          health_status.status = "Degraded"
+          health_status.message = "Resource is in a degraded state."
+        elseif obj.status == "success" then
+          health_status.status = "Healthy"
+          health_status.message = "Resource is up-to-date."
+        elseif obj.status == "progressing" then
+          health_status.status = "Progressing"
+          health_status.message = "Resource is provisioning."
+        else
+          health_status.status = "Unknown"
+          health_status.message = "Unknown status."
+        end
 
-          if obj.status == nil or obj.status.conditions == nil then
-            return health_status
-          end
-
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" then
-              if condition.status == "True" then
-                health_status.status = "Healthy"
-                health_status.message = "Resource is up-to-date."
-                return health_status
-              end
-            end
-
-            if condition.type == "LastAsyncOperation" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-
-            if condition.type == "Synced" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-          end
-
-          return health_status
-
-      "*.aws.crossplane.io/*":
-        health.lua: |
-          health_status = {
-            status = "Progressing",
-            message = "Provisioning ..."
-          }
-
-          if obj.status == nil or obj.status.conditions == nil then
-            return health_status
-          end
-
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" then
-              if condition.status == "True" then
-                health_status.status = "Healthy"
-                health_status.message = "Resource is up-to-date."
-                return health_status
-              end
-            end
-
-            if condition.type == "LastAsyncOperation" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-
-            if condition.type == "Synced" then
-              if condition.status == "False" then
-                health_status.status = "Degraded"
-                health_status.message = condition.message
-                return health_status
-              end
-            end
-          end
-
-          return health_status
-
+        return health_status
+      
 
 extraObjects:
   - |
@@ -237,7 +147,7 @@ extraObjects:
       name: default
       namespace: {{ $.Release.Namespace | quote }}
       annotations:
-        source: gitops-brige
+        source: gitops
     spec:
       clusterResourceWhitelist:
       - group: '*'

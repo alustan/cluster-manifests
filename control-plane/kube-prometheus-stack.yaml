@@ -52,3 +52,4 @@ spec:
           - CreateNamespace=true
           - ServerSideApply=true  # Big CRDs.
           - ApplyOutOfSyncOnly=true
+        syncWave: 1
