@@ -74,8 +74,7 @@ server:
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 
 configs:
-  secret:
-    githubSecret: "{{.metadata.annotations.git_webhook_secret}}"
+  
 
   repositories:
     # Required when using helm repository with oci formal like karpenter 
