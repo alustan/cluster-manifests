@@ -1,17 +1,17 @@
 
 # Cluster manifests
 
-> **Cluster addons/controller-manifests with relevant configurations using argocd applicationset**
+> - **Cluster addons/controller-manifests with relevant configurations using argocd applicationset**
 
-> **Manifests used by app-controller to abstract deployment complexities**
+> - **Manifests used by app-controller to abstract deployment complexities**
 
-- Metadata needed by manifests are retrieved automatically from applicationset cluster secret 
+- Metadata needed by manifests are retrieved automatically from applicationset cluster secret bootstrapped via terraform
 
 ## List of controller manifests
 
  - **Argocd**
 
- > Enabled and configured argocd ingress to share ALB with other applications exposed via ingress
+ > Enabled and configured argocd ingress to share ALB with other applications using ALB group
 
  > Enabled service monitor for prometheus
 
@@ -19,9 +19,7 @@
 
  > Enabled horizontal pod autoscaling
 
- > Enabled loadbalancer access
-
- > Enabled git webhook for regulated syncing of resources
+ > Enabled argocd UI access via loadbalancer 
 
  > Configured argocd RBAC
 
@@ -170,5 +168,13 @@
  > Prometheus Service with TargetPort: http-metrics
 
 
-**This is one of multiple projects that aims to setup a functional platform for seemless app deployment with less technical overhead**
+**This is one of multiple projects that aims to setup a functional platform for seamless application delivery and deployment with less technical overhead**
+
+**Check Out:**
+
+1. [alustan](https://github.com/alustan/alustan) `kubernetes native platform orchestrator`
+
+2. [infrastructure](https://github.com/alustan/infrastructure) `Modular infrastructure setup`
+
+4. [backstage-portal](https://github.com/alustan/backstage-portal) `Backstage portal`
 

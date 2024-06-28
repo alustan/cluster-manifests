@@ -74,8 +74,7 @@ server:
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 
 configs:
-  secret:
-    githubSecret: "{{.metadata.annotations.git_webhook_secret}}"
+  
 
   repositories:
     # Required when using helm repository with oci formal like karpenter 
@@ -109,26 +108,26 @@ configs:
 
 
     application.resourceTrackingMethod: 'annotation' 
-    
+
     resource.customizations: |
-      "alustan.io/*":
+      "alustan.io/terraforms":
       health.lua: |
         health_status = {
           status = "Progressing",
           message = "Provisioning ..."
         }
 
-        if obj.status == nil then
+        if obj.status == nil or obj.status.state == nil then
           return health_status
         end
 
-        if obj.status == "error" or obj.status == "failed" then
+        if obj.status.state == "error" or obj.status.state == "failed" then
           health_status.status = "Degraded"
           health_status.message = "Resource is in a degraded state."
-        elseif obj.status == "success" then
+        elseif obj.status.state == "Completed" then
           health_status.status = "Healthy"
           health_status.message = "Resource is up-to-date."
-        elseif obj.status == "progressing" then
+        elseif obj.status.state == "Progressing" then
           health_status.status = "Progressing"
           health_status.message = "Resource is provisioning."
         else
@@ -137,6 +136,36 @@ configs:
         end
 
         return health_status
+
+      "alustan.io/applications":
+      health.lua: |
+        health_status = {
+          status = "Progressing",
+          message = "Provisioning ..."
+        }
+
+        if obj.status == nil or obj.status.healthStatus == nil then
+          return health_status
+        end
+
+        if obj.status.healthStatus == "Degraded" then
+          health_status.status = "Degraded"
+          health_status.message = "Resource is in a degraded state."
+        elseif obj.status.healthStatus == "Healthy" then
+          health_status.status = "Healthy"
+          health_status.message = "Resource is up-to-date."
+        elseif obj.status.healthStatus == "Progressing" then
+          health_status.status = "Progressing"
+          health_status.message = "Resource is provisioning."
+        else
+          health_status.status = "Unknown"
+          health_status.message = "Unknown status."
+        end
+
+        return health_status
+
+    
+    
       
 
 extraObjects:
