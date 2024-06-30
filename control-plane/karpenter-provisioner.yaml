@@ -4,6 +4,7 @@ kind: ApplicationSet
 metadata:
   name: karpenter-provisioner
   namespace: argocd
+  
  
 spec:
   syncPolicy:
@@ -31,7 +32,7 @@ spec:
           automated: {}
           syncOptions:
             - CreateNamespace=true
-          syncWave: 2
+          
         source:
           repoURL: '{{metadata.annotations.addons_git_repo}}'
           path: 'charts/karpenter-provisioner'

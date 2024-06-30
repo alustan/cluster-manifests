@@ -168,13 +168,4 @@
  > Prometheus Service with TargetPort: http-metrics
 
 
-**This is one of multiple projects that aims to setup a functional platform for seamless application delivery and deployment with less technical overhead**
-
-**Check Out:**
-
-1. [alustan](https://github.com/alustan/alustan) `kubernetes native platform orchestrator`
-
-2. [infrastructure](https://github.com/alustan/infrastructure) `Modular infrastructure setup`
-
-4. [backstage-portal](https://github.com/alustan/backstage-portal) `Backstage portal`
-
+**Alustan:** focuses on building tools and platforms that ensures right implementation of devops principles

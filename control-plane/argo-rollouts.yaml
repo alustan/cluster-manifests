@@ -3,6 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: addons-argo-rollouts
+  
 spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
@@ -53,4 +54,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true  # Big CRDs.
-        syncWave: 1
+      

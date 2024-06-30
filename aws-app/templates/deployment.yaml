@@ -37,6 +37,13 @@ spec:
                 name: external-secrets-sm
             - configMapRef:
                 name: {{ include "app.fullname" . }}
+          env:
+           - name: CLUSTER_NAME
+             value: {{ .Values.clusterName }}
+           - name: CLUSTER_ENDPOINT
+             value: {{ .Values.clusterEndpoint }}
+           - name: CLUSTER_CA_DATA
+             value: {{ .Values.clusterCAData}}
           livenessProbe:
             httpGet:
               path: /
