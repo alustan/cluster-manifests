@@ -87,6 +87,10 @@ externalNameService:
   dbAlias: postgres
   externalName: # staging-eks-postgresql.c9g80s8cqy2b.us-west-2.rds.amazonaws.com
 
+clusterName: ""
+clusterEndpoint: ""
+clusterCAData: ""
+
 rolloutServices:
   - name: alb-rollout-root
     
