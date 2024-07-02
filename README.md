@@ -3,7 +3,6 @@
 
 > - **Cluster addons/controller-manifests with relevant configurations using argocd applicationset**
 
-> - **Manifests used by app-controller to abstract deployment complexities**
 
 - Metadata needed by manifests are retrieved automatically from applicationset cluster secret bootstrapped via terraform
 
@@ -103,7 +102,6 @@
 
  > Enabled service monitor for prometheus
 
- > Ignored diferences for `aws-load-balancer-tls` `MutatingWebhookConfiguration` and `ValidatingWebhookConfiguration`
 
  - **Loki stack**
 
@@ -115,7 +113,7 @@
 
  > Slack integration
 
-## List of manifests used by app-controller
+## application manifests
 
  - **Argo Rollout**
 
