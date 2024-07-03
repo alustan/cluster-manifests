@@ -113,6 +113,10 @@
 
  > Slack integration
 
+ - **Alustan**
+
+  > Configured service account arn
+
 ## application manifests
 
  - **Argo Rollout**

@@ -1,0 +1,65 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons-alustan
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - merge:
+        mergeKeys: [server]
+        generators:
+          - clusters:
+              values:
+                addonChart: "alustan-helm"
+              
+                addonChartVersion: 0.31.0
+                addonChartRepositoryNamespace: alustan
+                addonChartRepository: "oci://registry-1.docker.io/alustan"
+              selector:
+                matchExpressions:
+                
+                  - key: enable_alustan
+                    operator: In
+                    values: ['true']
+         
+  template:
+    metadata:
+      name: addon-{{name}}-{{values.addonChart}}
+    spec:
+      project: default
+      sources:
+        - repoURL: '{{metadata.annotations.addons_git_repo}}'
+          targetRevision: '{{metadata.annotations.addons_git_revision}}'
+          ref: values
+        - chart: '{{values.addonChart}}'
+          repoURL: '{{values.addonChartRepository}}'
+          targetRevision: '{{values.addonChartVersion}}'
+          helm:
+            releaseName: '{{values.addonChart}}'
+            ignoreMissingValueFiles: true
+            valueFiles:
+              - $values/environments/base/{{values.addonChart}}/values.yaml
+              - $values/environments/{{metadata.labels.environment}}/{{values.addonChart}}/values.yaml
+
+            values: |
+              syncInterval: "180m"
+              containerRegistry:
+                 containerRegistrySecret: "{{metadata.annotations.container_registry_secret}}"
+              serviceAccount:
+                annotations: "{{metadata.annotations.service_account_role_arn}}"
+                name: "controller-sa"
+
+           
+               
+      destination:
+        namespace: '{{values.addonChartRepositoryNamespace}}'
+        name: '{{name}}'
+      syncPolicy:
+        automated:
+          prune: false
+        syncOptions:
+          - CreateNamespace=false
+          - ServerSideApply=true  # Big CRDs.
+       
