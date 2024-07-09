@@ -14,7 +14,7 @@ spec:
               values:
                 addonChart: "alustan-helm"
               
-                addonChartVersion: 0.31.0
+                addonChartVersion: 1.0.0
                 addonChartRepositoryNamespace: alustan
                 addonChartRepository: "oci://registry-1.docker.io/alustan"
               selector:
