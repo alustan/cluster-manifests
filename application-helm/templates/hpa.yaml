@@ -7,8 +7,8 @@ metadata:
     {{- include "app.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
-    apiVersion: {{ if eq .Values.workload.type "rollout" }}argoproj.io/v1alpha1{{ else }}apps/v1{{ end }}
-    kind: {{ if eq .Values.workload.type "rollout" }}Rollout{{ else }}Deployment{{ end }}
+    apiVersion: {{ if .Values.strategy.canary.enabled }}argoproj.io/v1alpha1{{ else }}apps/v1{{ end }}
+    kind: {{ if .Values.strategy.canary.enabled }}Rollout{{ else }}Deployment{{ end }}
     name: {{ include "app.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}

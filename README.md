@@ -170,4 +170,3 @@
  > Prometheus Service with TargetPort: http-metrics
 
 
-**Alustan:** focuses on building tools and platforms that ensures right implementation of devops principles
