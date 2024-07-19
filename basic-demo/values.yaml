@@ -1,0 +1,11 @@
+# dummy values file
+
+cluster: ""
+
+service: frontend
+
+image: gcr.io/heptio-images/ks-guestbook-demo:0.2 #alustan/basic-web:0.2.0
+
+config:
+  DUMMY_1: ""
+  DUMMY_2: ""
