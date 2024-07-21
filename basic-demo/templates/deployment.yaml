@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
      
-      - image: gcr.io/heptio-images/ks-guestbook-demo:0.2
+      - image: {{ .Values.image }}
         name: guestbook-ui
         env:
           - name: CLUSTER_NAME

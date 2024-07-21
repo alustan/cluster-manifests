@@ -4,7 +4,7 @@ cluster: ""
 
 service: frontend
 
-image: gcr.io/heptio-images/ks-guestbook-demo:0.2 #alustan/basic-web:0.2.0
+image: alustan/web-app-demo:1.0.0
 
 config:
   DUMMY_1: ""
