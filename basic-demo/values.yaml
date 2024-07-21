@@ -4,7 +4,7 @@ cluster: ""
 
 service: frontend
 
-image: alustan/web-app-demo:1.0.0
+image: alustan/web-app-demo:1.0.1
 
 config:
   DUMMY_1: ""
