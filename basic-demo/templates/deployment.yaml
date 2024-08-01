@@ -1,23 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: guestbook-ui
+  name: backstage-demo
 spec:
   selector:
     matchLabels:
-      app: guestbook-ui
+      app: backstage-demo
   template:
     metadata:
       labels:
-        app: guestbook-ui
+        app: backstage-demo
     spec:
       containers:
      
-      - image: {{ .Values.image }}
-        name: guestbook-ui
-        env:
-          - name: CLUSTER_NAME
-            value: {{ .Values.cluster }}
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        name: backstage-demo
+        
         ports:
         - name: http
           containerPort: 80
