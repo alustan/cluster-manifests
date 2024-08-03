@@ -5,7 +5,9 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
         paths:
         - path: /
           pathType: Prefix
@@ -14,3 +16,4 @@ spec:
               name: backstage-demo
               port:
                 name: http
+    {{- end }}

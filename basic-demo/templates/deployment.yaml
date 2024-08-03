@@ -15,6 +15,14 @@ spec:
      
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: backstage-demo
+
+        env:
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.database.connection.password }}
+        - name: POSTGRES_USER
+          value: {{ .Values.database.connection.user }}
+        - name: POSTGRES_HOST
+          value: {{ .Values.database.connection.host }}
         
         ports:
         - name: http

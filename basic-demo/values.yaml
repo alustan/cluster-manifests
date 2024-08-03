@@ -7,8 +7,18 @@ service: frontend
 image:
   repository: alustan/web-app-demo
   pullPolicy: IfNotPresent
-  tag: "1.0.1"
+  tag: "1.0.0"
+
+ingress:
+  hosts:
+    - host: localhost
 
 config:
   DUMMY_1: ""
   DUMMY_2: ""
+
+database:
+  connection:
+    host: ""
+    user: ""
+    password: ""
