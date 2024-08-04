@@ -1,9 +1,8 @@
-# Use a base image that supports k3d
-FROM rancher/k3d:latest
+# Use an alpine base image
+FROM alpine:latest
 
 # Install necessary packages
-RUN apt-get update && apt-get install -y \
-    passwd
+RUN apk update && apk add --no-cache shadow
 
 # some images require specific values
 ARG USERNAME=vscode
@@ -18,4 +17,10 @@ RUN chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # log the docker build complete
 RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build complete" >> /home/$USERNAME/status
+
+# Install k3d
+RUN wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+# Set entrypoint to k3d to match the original image behavior
+ENTRYPOINT ["k3d"]
 
