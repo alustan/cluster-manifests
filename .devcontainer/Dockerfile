@@ -3,7 +3,8 @@ FROM ubuntu:latest
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
-    shadow-utils \
+    passwd \
+    adduser \
     wget \
     bash
 
@@ -11,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 ARG USERNAME=vscode
 
 # Create the user if it doesn't exist
-RUN id -u $USERNAME &>/dev/null || useradd -m $USERNAME
+RUN id -u $USERNAME &>/dev/null || adduser --disabled-password --gecos "" $USERNAME
 
 # log the docker build start event
 RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build start" >> /home/$USERNAME/status
@@ -26,4 +27,3 @@ RUN wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | 
 
 # Set entrypoint to k3d to match the original image behavior
 ENTRYPOINT ["k3d"]
-
