@@ -8,8 +8,6 @@ fi
 # Substitute environment variables in the template file
 envsubst < values-template.yaml > values.yaml
 
-# Create the kind cluster
-kind create cluster 
 
 # Create the namespace
 kubectl create ns alustan
