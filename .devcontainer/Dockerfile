@@ -1,29 +1,40 @@
-# Use an Ubuntu base image
-FROM ubuntu:latest
+# Base image with necessary tools
+FROM mcr.microsoft.com/vscode/devcontainers/dotnet as base
 
-# Install necessary packages
-RUN apt-get update && apt-get install -y \
-    sudo \
-    curl \
-    bash
+# User configuration
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-# Create the vscode user if it doesn't exist
-RUN useradd -m -s /bin/bash vscode
+# Configure environment
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH=$PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/opt/fluent-bit/bin
 
-# Ensure home directory exists
-RUN mkdir -p /home/vscode
+# Copy setup scripts
+COPY library-scripts/*.sh /scripts/
 
-# Set ownership of the home directory
-RUN chown -R vscode:vscode /home/vscode
-
-# Log the docker build start event
-RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build start" >> /home/vscode/status
+# Run base setup
+RUN /bin/bash /scripts/base-setup.sh
 
 # Install k3d
-RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+RUN curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | TAG=v5.0.0 bash
 
-# Set the user for subsequent operations
-USER vscode
+# Change ownership of the home directory
+RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
 
-# Set entrypoint to k3d to match the original image behavior
-ENTRYPOINT ["k3d"]
+# Update and clean up
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get autoremove -y && \
+    apt-get clean -y
+
+# Switch to the user
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+
+# Install additional dependencies required for Codespaces
+RUN apt-get install -y --no-install-recommends bash curl nano jq httpie
+
+# Set the entrypoint
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
