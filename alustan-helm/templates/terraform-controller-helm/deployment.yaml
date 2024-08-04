@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terraform-controller-helm
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "terraform-controller-helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.infrastructure.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "terraform-controller-helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "terraform-controller-helm.labels" . | nindent 8 }}
+    spec:
+      
+      serviceAccountName: terraform-sa
+      
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.infrastructure.image.repository }}:{{ .Values.infrastructure.image.tag }}"
+          env:
+            - name: INFRA_SYNC_INTERVAL
+              value: {{ .Values.infrastructure.syncInterval }}
+            {{- if .Values.useSecrets }}
+            - name: CONTAINER_REGISTRY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.containerRegistrySecretName }}
+                  key: {{ .Values.containerRegistrySecretKey }}
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitTokenSecretName }}
+                  key: {{ .Values.gitTokenSecretKey }}
+           
+            {{- else }}
+            - name: CONTAINER_REGISTRY_SECRET
+              value: {{ .Values.containerRegistry.containerRegistrySecret }}
+            - name: GITHUB_TOKEN
+              value: {{ .Values.gitToken }}
+            {{- end }}
+          imagePullPolicy: {{ .Values.infrastructure.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.infrastructure.service.port }}
+              protocol: TCP
+          
+         

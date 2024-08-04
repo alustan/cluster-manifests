@@ -1,0 +1,2 @@
+containerRegistry:
+  containerRegistrySecret: ${REGISTRY_SECRET}  
