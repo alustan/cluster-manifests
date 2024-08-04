@@ -8,6 +8,7 @@ fi
 # Substitute environment variables in the template file
 envsubst < values-template.yaml > values.yaml
 
-# Apply the Helm chart with the substituted values file
-helm upgrade --install controller alustan-helm --timeout 20m0s --debug --atomic --values values.yaml
+kubectl create ns alustan
 
+# Apply the Helm chart with the substituted values file
+helm install controller alustan-helm --timeout 20m0s --debug --atomic --values values.yaml
