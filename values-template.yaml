@@ -1,8 +1,0 @@
-containerRegistry:
-  containerRegistrySecret: ${REGISTRY_SECRET}  
-
-gitToken: ${GIT_TOKEN} 
-
-gitOrgUrl: ${GIT_ORG_URL} 
-
-gitSSHSecret: ${GIT_SSH_SECRET} 
