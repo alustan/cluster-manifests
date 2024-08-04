@@ -6,7 +6,7 @@
 	  },
 	  "ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
-	"postCreateCommand": ".devcontainer/postCreateCommand.sh",
+	"postCreateCommand": ".devcontainer/post-create.sh",
 	"workspaceFolder": "/home/vscode/alustan",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/alustan,type=bind",
 	"hostRequirements": {
