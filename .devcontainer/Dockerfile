@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=$PATH:/usr/local/go/bin:/home/${USERNAME}/go/bin:/home/${USERNAME}/bin:/home/${USERNAME}/.local/bin:/home/${USERNAME}/.dotnet/tools:/opt/fluent-bit/bin
 
 # Copy setup scripts
-COPY library-scripts/*.sh /scripts/
+COPY library-scripts/base-setup.sh /scripts/
 
 # Run base setup
 RUN /bin/bash /scripts/base-setup.sh
