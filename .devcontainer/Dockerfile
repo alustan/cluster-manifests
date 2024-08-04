@@ -1,8 +1,11 @@
-# Use an alpine base image
-FROM alpine:latest
+# Use an Ubuntu base image
+FROM ubuntu:latest
 
 # Install necessary packages
-RUN apk update && apk add --no-cache shadow
+RUN apt-get update && apt-get install -y \
+    shadow-utils \
+    wget \
+    bash
 
 # some images require specific values
 ARG USERNAME=vscode
