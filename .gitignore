@@ -2,3 +2,4 @@ local/
 *.tgz
 Chart.lock
 .DS_Store
+.env
