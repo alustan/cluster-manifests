@@ -10,5 +10,5 @@ envsubst < values-template.yaml > values.yaml
 
 kubectl create ns alustan
 
-# Apply the Helm chart with the substituted values file
-helm install controller alustan-helm --timeout 20m0s --debug --atomic --values values.yaml
+
+helm install alustan-controller oci://registry-1.docker.io/alustan/alustan-helm --version <version> --timeout 20m0s --debug --atomic --values values.yaml 
