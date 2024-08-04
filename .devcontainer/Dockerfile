@@ -7,6 +7,9 @@ ARG USERNAME=vscode
 # Create the user directory if it doesn't exist
 RUN mkdir -p /home/$USERNAME
 
+# Create the user if it doesn't exist
+RUN id -u $USERNAME &>/dev/null || useradd -m $USERNAME
+
 # log the docker build start event
 RUN echo "$(date +'%Y-%m-%d %H:%M:%S')    docker build start" >> /home/$USERNAME/status
 
