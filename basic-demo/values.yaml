@@ -11,7 +11,7 @@ image:
 
 ingress:
   hosts:
-    - host: localhost
+    - host: ""
 
 config:
   DUMMY_1: ""
