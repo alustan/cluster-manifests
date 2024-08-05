@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: backstage-demo
+  name: web-demo
   
 data:
 {{- range $key, $value := .Values.config }}
