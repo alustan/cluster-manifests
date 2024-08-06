@@ -12,18 +12,17 @@ spec:
         app: web-demo
     spec:
       containers:
-     
-      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        name: web-demo
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          name: web-demo
 
-        env:
-        - name: POSTGRES_PASSWORD
-          value: {{ .Values.database.connection.password }}
-        - name: POSTGRES_USER
-          value: {{ .Values.database.connection.user }}
-        - name: POSTGRES_HOST
-          value: {{ .Values.database.connection.host }}
-        
-        ports:
-        - name: http
-          containerPort: 80
+          env:
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.database.connection.password }}
+            - name: POSTGRES_USER
+              value: {{ .Values.database.connection.user }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.database.connection.host }}
+          
+          ports:
+            - name: http
+              containerPort: {{ if eq .Values.service "preview" }}8000{{ else }}3000{{ end }}
