@@ -3,6 +3,7 @@
 
 service: frontend
 
+nameOverride: "web-demo"
 
 image:
   repository: alustan/web-app-demo
